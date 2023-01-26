@@ -32,8 +32,8 @@ a {
 
   @include tablet {
     max-width: 1024px;
-    padding-left: 32px;
-    padding-right: 32px;
+    padding-left: 30px;
+    padding-right: 30px;
   }
 
   @include desktop {
