@@ -1,23 +1,24 @@
-import { Notify } from 'notiflix/build/notiflix-notify-aio';
+import {
+  Notify
+} from 'notiflix/build/notiflix-notify-aio';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 
-import { createMarkup } from './createMarkup';
-import { PixabayAPI } from './PixabayAPI';
-import { refs } from './refs';
-import { notifyInit } from './notifyInit';
-import { spinnerPlay, spinnerStop } from './spinner';
+import {
+  createMarkup
+} from './createMarkup';
+import {
+  PixabayAPI
+} from './PixabayAPI';
+import {
+  refs
+} from './refs';
+import {
+  notifyInit
+} from './notifyInit';
 
 const modalLightboxGallery = new SimpleLightbox('.gallery a', {
   captionDelay: 250,
-});
-
-spinnerPlay();
-
-window.addEventListener('load', () => {
-  console.log('All resources finished loading!');
-
-  spinnerStop();
 });
 
 refs.btnLoadMore.classList.add('is-hidden');
@@ -35,17 +36,13 @@ const loadMorePhotos = async function (entries, observer) {
     if (entry.isIntersecting) {
       observer.unobserve(entry.target);
       pixaby.incrementPage();
-
-      spinnerPlay();
-
       try {
-        spinnerPlay();
-
-        const { hits } = await pixaby.getPhotos();
+        const {
+          hits
+        } = await pixaby.getPhotos();
         const markup = createMarkup(hits);
         refs.gallery.insertAdjacentHTML('beforeend', markup);
 
-        // const showMore = pixaby.hasMorePhotos();
         if (pixaby.hasMorePhotos) {
           const lastItem = document.querySelector('.gallery a:last-child');
           observer.observe(lastItem);
@@ -54,14 +51,12 @@ const loadMorePhotos = async function (entries, observer) {
             "We're sorry, but you've reached the end of search results.",
             notifyInit
           );
-
         modalLightboxGallery.refresh();
         scrollPage();
       } catch (error) {
         Notify.failure(error.message, 'Something went wrong!', notifyInit);
-        clearPage();
-      } finally {
-        spinnerStop();
+        console.log("Uncaught (in promise) o")
+        // clearPage();
       }
     }
   });
@@ -73,7 +68,9 @@ const onSubmitClick = async event => {
   event.preventDefault();
 
   const {
-    elements: { searchQuery },
+    elements: {
+      searchQuery
+    },
   } = event.target;
 
   const search_query = searchQuery.value.trim().toLowerCase();
@@ -89,17 +86,17 @@ const onSubmitClick = async event => {
   pixaby.query = search_query;
 
   clearPage();
-
   try {
-    spinnerPlay();
-    const { hits, total } = await pixaby.getPhotos();
+    const {
+      hits,
+      total
+    } = await pixaby.getPhotos();
 
     if (hits.length === 0) {
       Notify.failure(
         `Sorry, there are no images matching your ${search_query}. Please try again.`,
         notifyInit
       );
-
       return;
     }
 
@@ -107,24 +104,22 @@ const onSubmitClick = async event => {
     refs.gallery.insertAdjacentHTML('beforeend', markup);
 
     pixaby.setTotal(total);
-    Notify.success(`Hooray! We found ${total} images.`, notifyInit);
 
+    Notify.success(`Hooray! We found ${total} images.`, notifyInit);
+    console.log('All resources finished loading!');
     if (pixaby.hasMorePhotos) {
-      //refs.btnLoadMore.classList.remove('is-hidden');
+      refs.btnLoadMore.classList.remove('is-hidden');
 
       const lastItem = document.querySelector('.gallery a:last-child');
       observer.observe(lastItem);
     }
 
     modalLightboxGallery.refresh();
-    // scrollPage();
+    scrollPage();
   } catch (error) {
     Notify.failure(error.message, 'Something went wrong!', notifyInit);
-
     clearPage();
-  } finally {
-    spinnerStop();
-  }
+  } finally {}
 };
 
 const onLoadMore = async () => {
@@ -136,14 +131,15 @@ const onLoadMore = async () => {
     notifyInit;
   }
   try {
-    const { hits } = await pixaby.getPhotos();
+    const {
+      hits
+    } = await pixaby.getPhotos();
     const markup = createMarkup(hits);
     refs.gallery.insertAdjacentHTML('beforeend', markup);
 
     modalLightboxGallery.refresh();
   } catch (error) {
     Notify.failure(error.message, 'Something went wrong!', notifyInit);
-
     clearPage();
   }
 };
@@ -157,8 +153,11 @@ function clearPage() {
 refs.form.addEventListener('submit', onSubmitClick);
 refs.btnLoadMore.addEventListener('click', onLoadMore);
 
+
 function scrollPage() {
-  const { height: cardHeight } = document
+  const {
+    height: cardHeight
+  } = document
     .querySelector('.gallery')
     .firstElementChild.getBoundingClientRect();
 
@@ -167,8 +166,6 @@ function scrollPage() {
     behavior: 'smooth',
   });
 }
-
-//Button smooth scroll up
 
 window.addEventListener('scroll', () => {
   scrollFunction();
@@ -181,6 +178,10 @@ function scrollFunction() {
     refs.btnUpWrapper.style.display = 'none';
   }
 }
+
 refs.btnUp.addEventListener('click', () => {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
 });
